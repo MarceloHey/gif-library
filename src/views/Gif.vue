@@ -34,7 +34,7 @@
     </sui-grid>
     <ConfirmDelete
       @delete="handleDelete"
-      @cancel="handleCancel"
+      @cancel="() => (deleteModal = false)"
       v-if="deleteModal"
     />
     <Loading v-if="loading" />
@@ -73,10 +73,6 @@ export default defineComponent({
       router.push({ path: "/" });
     };
 
-    const handleCancel = () => {
-      deleteModal.value = false;
-    };
-
     store.dispatch("loadGif", id);
     return {
       gif: computed(() => store.getters.gif),
@@ -84,7 +80,6 @@ export default defineComponent({
       deleteModal,
       formatDate,
       handleDelete,
-      handleCancel,
       handleDeleteClick,
     };
   },

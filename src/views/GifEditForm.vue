@@ -40,6 +40,8 @@
 <script>
 import { defineComponent, computed, reactive, ref } from "@vue/composition-api";
 import store from "../store/index";
+import mapTagsJson from "../functions/mapTags";
+
 import GifCard from "../components/GifCard.vue";
 import TextInput from "../components/form/TextInput.vue";
 import SelectInput from "../components/form/SelectInput.vue";
@@ -56,11 +58,11 @@ export default defineComponent({
     const router = context.root.$router;
     const id = router.currentRoute.params.id;
     const gif = computed(() => store.getters.gif);
+    const tags = computed(() => mapTagsJson(store.getters.tags));
     const searchTagString = ref("");
     const selectedTags = ref([]);
-    const tags = computed(() => mapTagsJson(store.getters.tags));
+    const canSubmit = ref(false);
 
-    const canSubmit = ref(true);
     const errors = reactive({
       title: "",
     });
@@ -71,22 +73,8 @@ export default defineComponent({
 
     const handleBlur = (field) => {
       if (field === "title") {
-        if (gif.value.title) {
-          errors.title = "";
-          canSubmit.value = true;
-        }
+        gif.value.title ? (errors.title = "") : null;
       }
-    };
-
-    const mapTagsJson = (oldTags) => {
-      return oldTags.map((tag) => {
-        const newTag = {
-          key: tag.name,
-          value: tag.name,
-          text: tag.name,
-        };
-        return newTag;
-      });
     };
 
     const searchTag = (value) => {
@@ -106,13 +94,12 @@ export default defineComponent({
 
     const handleSubmit = (ev) => {
       ev.preventDefault();
-      if (!gif.value.title) {
-        errors.title = "Please name your gif";
-        canSubmit.value = false;
-      } else {
-        errors.title = "";
-        canSubmit.value = true;
-      }
+
+      !gif.value.title
+        ? (errors.title = "Please name your gif")
+        : (errors.title = "");
+
+      !errors.title ? (canSubmit.value = true) : (canSubmit.value = false);
 
       if (canSubmit.value === true) {
         updatedGif.title = gif.value.title;
@@ -124,14 +111,14 @@ export default defineComponent({
 
     store.dispatch("loadGif", id);
     return {
+      loading: computed(() => store.getters.loading),
+      loadingTags: computed(() => store.getters.loadingTags),
       handleSubmit,
       handleBlur,
       handleSearchTag,
       selectedTags,
       gif,
       tags,
-      loading: computed(() => store.getters.loading),
-      loadingTags: computed(() => store.getters.loadingTags),
       errors,
       canSubmit,
     };

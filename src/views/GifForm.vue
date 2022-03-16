@@ -27,6 +27,8 @@
 <script>
 import { defineComponent, ref, computed, reactive } from "@vue/composition-api";
 import store from "../store/index";
+import mapTagsJson from "../functions/mapTags";
+
 import FileInput from "../components/form/FileInput.vue";
 import TextInput from "../components/form/TextInput.vue";
 import SelectInput from "../components/form/SelectInput.vue";
@@ -38,7 +40,7 @@ export default defineComponent({
     SelectInput,
   },
   setup(props, context) {
-    const editing = ref(false);
+    const router = context.root.$router;
     const selectedTags = ref([]);
     const selectedFile = ref();
     const searchTagString = ref("");
@@ -54,11 +56,6 @@ export default defineComponent({
       file: "",
     });
 
-    const router = context.root.$router;
-    if (router.currentRoute.params.id) {
-      editing.value = true;
-    }
-
     const handleBlur = (field) => {
       if (field === "title") {
         if (gif.title) {
@@ -69,40 +66,24 @@ export default defineComponent({
 
     const handleSubmit = (ev) => {
       ev.preventDefault();
-      if (!gif.title) {
-        errors.title = "Please name your gif";
-        canSubmit.value = false;
-      } else {
-        errors.title = "";
-      }
 
-      if (!gif.file) {
-        errors.file = "Please select a file to upload";
-      } else {
-        errors.file = "";
-      }
+      !gif.title
+        ? (errors.title = "Please name your gif")
+        : (errors.title = "");
 
-      if (!errors.title && !errors.file) {
-        canSubmit.value = true;
-      }
+      !gif.file
+        ? (errors.file = "Please select a file to upload")
+        : (errors.file = "");
+
+      !errors.title && !errors.file
+        ? (canSubmit.value = true)
+        : (canSubmit.value = false);
 
       if (canSubmit.value === true) {
         console.log({ ...gif });
         store.dispatch("createGif", gif);
-
         router.push({ path: "/" });
       }
-    };
-
-    const mapTagsJson = (oldTags) => {
-      return oldTags.map((tag) => {
-        const newTag = {
-          key: tag.name,
-          value: tag.name,
-          text: tag.name,
-        };
-        return newTag;
-      });
     };
 
     const searchTag = (value) => {
@@ -141,7 +122,6 @@ export default defineComponent({
 @import "../scss/mixins";
 .form {
   padding: 40px 15rem;
-  /* min-height: 100vh; */
   @include device(small) {
     padding: 40px 20px;
   }

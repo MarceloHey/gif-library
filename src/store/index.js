@@ -56,6 +56,7 @@ export default new Vuex.Store({
         commit("setLoading", false);
       }
     },
+
     async loadMoreGifs({ state, commit }, { pagination, query }) {
       commit("setLoading", true);
       try {
@@ -71,6 +72,7 @@ export default new Vuex.Store({
         commit("setLoading", false);
       }
     },
+
     async searchGifs({ commit }, { pagination, query }) {
       commit("setLoading", true);
       try {
@@ -82,6 +84,7 @@ export default new Vuex.Store({
         commit("setLoading", false);
       }
     },
+
     async loadGif({ commit }, id) {
       commit("setLoading", true);
       commit("setGif", {})
@@ -94,6 +97,7 @@ export default new Vuex.Store({
         commit("setLoading", false);
       }
     },
+
     async searchTags({ state, commit }, query) {
       commit("setLoadingTags", true);
       try {
@@ -107,6 +111,7 @@ export default new Vuex.Store({
         commit("setLoadingTags", false);
       }
     },
+
     async createGif({ commit }, gif) {
       commit("setLoading", true);
       try {
@@ -120,6 +125,7 @@ export default new Vuex.Store({
         commit("setLoading", false);
       }
     },
+
     async editGif({ commit }) {
       commit("setLoading", true);
       try {
@@ -133,6 +139,7 @@ export default new Vuex.Store({
         commit("setLoading", false);
       }
     },
+
     async deleteGif({ commit }) {
       commit("setLoading", true);
       try {
@@ -146,6 +153,7 @@ export default new Vuex.Store({
         commit("setLoading", false);
       }
     },
+
     changePagination({ commit }, pagination) {
       commit('setPagination', pagination)
     }
